@@ -80,4 +80,3 @@ Navigate between the portals:
 👨‍🎓 Student Portal: Login to view allotted rooms and download hall tickets.
 
 👩‍🏫 Faculty Portal: Login to generate seat allocations and view allotted rooms.
-
