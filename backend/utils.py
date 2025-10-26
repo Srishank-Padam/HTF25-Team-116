@@ -153,6 +153,7 @@ def generate_room_seating_pdf(allocation_df, exam_meta=None):
     return bio
 
 
+
 # ----------------------------------------------------------
 # Hall Ticket PDF Generator (Professional Layout)
 # ----------------------------------------------------------

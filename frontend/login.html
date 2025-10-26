@@ -14,10 +14,10 @@
     <style>
         /* CSS Variables: Using the Colorful Dashboard Palette */
         :root {
-            --primary-color: #4A148C; /* Deep Purple */
-            --secondary-color: #8E24AA; /* Medium Purple */
-            --accent-color-1: #FF8F00; /* Bright Orange */
-            --accent-color-2: #00BFA5; /* Teal Green */
+            --primary-color: #4A148C; 
+            --secondary-color: #8E24AA; 
+            --accent-color-1: #FF8F00; 
+            --accent-color-2: #00BFA5; 
             --background-start: #F3E5F5;
             --background-end: #EDE7F6;
             --text-dark: #311B92;
@@ -27,7 +27,6 @@
             --success-color: #4CAF50;
         }
 
-        /* Base Styles */
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
@@ -39,20 +38,13 @@
             justify-content: center;
             align-items: center;
             transition: background 0.5s ease;
-            position: relative; /* Needed for positioning the absolute logo-brand */
-            overflow: hidden; /* Prevent logo overflow if too close to edge */
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Keyframes */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        @keyframes float {
-            0% { transform: translate(0, 0px); }
-            50% { transform: translate(0, 8px); }
-            100% { transform: translate(0, -0px); }
-        }
+        @keyframes float { 0% { transform: translate(0, 0px); } 50% { transform: translate(0, 8px); } 100% { transform: translate(0, -0px); } }
 
-        /* Login Container */
         .container {
             background: var(--content-bg);
             padding: 40px 30px; 
@@ -65,146 +57,62 @@
             animation: fadeIn 0.8s ease-out;
             border-top: 5px solid var(--accent-color-1); 
             position: relative; 
-            /* Removed internal logo-related overflow and position:relative */
         }
         
-        /* ===== Logo Styling (Circular and Top-Right) ===== */
         .logo-brand {
             position: absolute;
-            top: 30px; /* Distance from top edge */
-            right: 30px; /* Distance from right edge */
-            width: 100px; /* Fixed width for circle */
-            height: 100px; /* Fixed height for circle */
-            border-radius: 50%; /* Makes it a circle */
-            background: linear-gradient(45deg, var(--accent-color-1), var(--secondary-color)); /* Orange to Purple */
+            top: 30px;
+            right: 30px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--accent-color-1), var(--secondary-color));
             color: var(--text-light);
-            font-size: 18px; /* Slightly larger text */
-            font-weight: 800; /* Bolder text */
+            font-size: 18px;
+            font-weight: 800;
             letter-spacing: 0.5px;
             text-transform: uppercase;
-            display: flex; /* For centering text */
-            align-items: center; /* For centering text */
-            justify-content: center; /* For centering text */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Stronger shadow for depth */
-            z-index: 10; /* Ensure it's above the login card if needed */
-            animation: float 3s ease-in-out infinite; /* Floating animation */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            animation: float 3s ease-in-out infinite;
             transition: transform 0.3s ease;
         }
 
         .logo-brand:hover {
-            transform: scale(1.05) translateY(-4px); /* Slight scale and lift on hover */
-        }
-        /* ===== End Logo Styling ===== */
-
-        /* Typography */
-        h1 {
-            color: var(--primary-color); 
-            font-size: 28px; 
-            font-weight: 800; 
-            margin-bottom: 5px; 
-            letter-spacing: -0.5px;
-        }
-        p {
-            font-size: 14px; 
-            color: var(--text-medium); 
-            margin-bottom: 25px; 
+            transform: scale(1.05) translateY(-4px);
         }
 
-        /* Form Elements */
-        .row { 
-            margin: 20px 0; 
-            text-align: left; 
-        }
-        label {
-            display: block; 
-            font-weight: 700; 
-            margin-bottom: 8px; 
-            color: var(--secondary-color); 
-            font-size: 13px; 
-            text-transform: uppercase; 
-            letter-spacing: 0.5px;
-        }
+        h1 { color: var(--primary-color); font-size: 28px; font-weight: 800; margin-bottom: 5px; letter-spacing: -0.5px; }
+        p { font-size: 14px; color: var(--text-medium); margin-bottom: 25px; }
+
+        .row { margin: 20px 0; text-align: left; }
+        label { display: block; font-weight: 700; margin-bottom: 8px; color: var(--secondary-color); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
         input[type="email"], input[type="password"] {
-            width: 100%; 
-            padding: 12px 10px; 
-            border: 1px solid #D1C4E9; 
-            border-radius: 6px; 
-            background-color: #fff; 
-            transition: all 0.3s ease; 
-            font-size: 16px; 
-            color: var(--text-dark); 
-            box-sizing: border-box; 
+            width: 100%; padding: 12px 10px; border: 1px solid #D1C4E9; border-radius: 6px; background-color: #fff; transition: all 0.3s ease; font-size: 16px; color: var(--text-dark); box-sizing: border-box;
         }
-        input[type="email"]:focus, input[type="password"]:focus {
-            outline: none; 
-            border-color: var(--accent-color-2); 
-            box-shadow: 0 0 0 3px rgba(0, 191, 165, 0.4); 
-        }
-        
-        /* Login Button */
+        input[type="email"]:focus, input[type="password"]:focus { outline: none; border-color: var(--accent-color-2); box-shadow: 0 0 0 3px rgba(0, 191, 165, 0.4); }
+
         .btn {
             background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)); 
-            color: #fff; 
-            padding: 12px 30px; 
-            border: none; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-size: 17px; 
-            font-weight: 700; 
-            transition: all 0.3s ease; 
-            width: 100%; 
-            box-shadow: 0 8px 15px rgba(74, 20, 140, 0.4); 
-            letter-spacing: 1px; 
-            margin-top: 15px; 
+            color: #fff; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 17px; font-weight: 700; transition: all 0.3s ease; width: 100%; box-shadow: 0 8px 15px rgba(74, 20, 140, 0.4); letter-spacing: 1px; margin-top: 15px;
         }
-        .btn:hover {
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 20px rgba(74, 20, 140, 0.6); 
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(74, 20, 140, 0.6); background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); }
 
-        /* Message Area */
-        #loginMessage {
-            margin-top: 20px; 
-            padding: 10px; 
-            border-radius: 6px; 
-            font-size: 14px; 
-            font-weight: 600; 
-            text-align: left; 
-            min-height: 20px; 
-        }
-        .msg-error {
-            background-color: #ffebee; 
-            color: var(--error-color); 
-            border: 1px solid var(--error-color); 
-        }
-        .msg-success { 
-            background-color: #e8f5e9; 
-            color: var(--success-color); 
-            border: 1px solid var(--success-color);
-        }
+        #loginMessage { margin-top: 20px; padding: 10px; border-radius: 6px; font-size: 14px; font-weight: 600; text-align: left; min-height: 20px; }
+        .msg-error { background-color: #ffebee; color: var(--error-color); border: 1px solid var(--error-color); }
+        .msg-success { background-color: #e8f5e9; color: var(--success-color); border: 1px solid var(--success-color); }
 
-        /* Link/Helper Text */
-        .helper-text {
-            font-size: 13px;
-            margin-top: 15px;
-        }
-        .helper-text a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .helper-text a:hover {
-            text-decoration: underline;
-        }
-
+        .helper-text { font-size: 13px; margin-top: 15px; }
+        .helper-text a { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+        .helper-text a:hover { text-decoration: underline; }
     </style>
 </head>
 
 <body>
-    <div class="logo-brand">
-        Examzy
-    </div>
+    <div class="logo-brand">Examzy</div>
 
     <div class="container">
         <h1>Welcome Back 👋</h1>
@@ -213,22 +121,12 @@
         <form id="loginForm">
             <div class="row">
                 <label for="email">Institutional Email</label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    required 
-                    placeholder="example@cbit.ac.in" 
-                >
+                <input type="email" id="email" required placeholder="example@cbit.ac.in">
             </div>
             
             <div class="row">
                 <label for="password">Password</label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    required 
-                    placeholder="••••••••"
-                >
+                <input type="password" id="password" required placeholder="••••••••">
             </div>
             
             <button type="submit" class="btn">LOG IN</button>
@@ -242,7 +140,7 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
             event.preventDefault();
             
             const email = document.getElementById('email').value.trim();
@@ -260,23 +158,32 @@
                 return;
             }
 
-            // Simple validation check for the required domain
             if (!email.endsWith(requiredDomain)) {
                 loginMessage.textContent = `⚠️ Error: Email must end with ${requiredDomain}.`;
                 loginMessage.classList.add('msg-error');
                 return;
             }
 
-            // --- Simulation of a successful login ---
-            loginMessage.textContent = `✅ Logging in... (Email: ${email})`;
-            loginMessage.className = 'msg-success';
-            
-            // In a real application, you'd send data to a server here.
-            
-            setTimeout(() => {
-                // Redirect to the dashboard file here if needed
-                console.log("Simulated login successful. Redirecting.");
-            }, 1000);
+            try {
+                const res = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (res.ok) {
+                    loginMessage.textContent = '✅ Login successful! Redirecting...';
+                    loginMessage.classList.add('msg-success');
+                    setTimeout(() => { window.location.href = '/generator'; }, 500);
+                } else {
+                    const data = await res.json();
+                    loginMessage.textContent = `❌ ${data.message || 'Login failed'}`;
+                    loginMessage.classList.add('msg-error');
+                }
+            } catch (error) {
+                loginMessage.textContent = `❌ Error: ${error.message}`;
+                loginMessage.classList.add('msg-error');
+            }
         });
     </script>
 </body>
