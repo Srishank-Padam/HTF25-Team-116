@@ -4,16 +4,14 @@ import qrcode
 from io import BytesIO
 from fpdf import FPDF
 import zipfile
+import io
 import os
 import tempfile
-import io
-
 
 
 # ----------------------------------------------------------
 # Helper for separating roll prefixes to avoid adjacency
 # ----------------------------------------------------------
-
 def _separate_adjacent_prefixes(roll_list):
     prefix_map = {}
     for roll in roll_list:
@@ -34,7 +32,6 @@ def _separate_adjacent_prefixes(roll_list):
 # ----------------------------------------------------------
 # Seat allocation logic with randomization + prefix handling
 # ----------------------------------------------------------
-
 def generate_seating_arrangement(timetable_df, rooms_df):
     if timetable_df is None or rooms_df is None:
         raise ValueError("Timetable or Rooms data not provided")
@@ -87,19 +84,39 @@ def generate_room_seating_pdf(allocation_df, exam_meta=None):
 
     for room_no, room_group in allocation_df.groupby("RoomNo"):
         pdf.add_page()
+
+        # --- HEADER ---
         pdf.set_font("Arial", "B", 16)
         pdf.cell(0, 10, f"Room Seating Arrangement - {room_no}", ln=True, align="C")
 
         pdf.set_font("Arial", "I", 12)
         if exam_meta:
-            pdf.cell(0, 10, f"Exam Date: {exam_meta.get('ExamDate', '')} | Session: {exam_meta.get('ExamSession', '')}", ln=True, align="C")
-        pdf.ln(8)
+            pdf.cell(0, 8, f"Exam Date: {exam_meta.get('ExamDate', '')} | Session: {exam_meta.get('ExamSession', '')}", ln=True, align="C")
+        pdf.ln(5)
 
-        pdf.set_font("Arial", "", 12)
-        for row in room_group.itertuples():
-            pdf.cell(0, 8, f"Seat {row.SeatNo}: {row.RollNo} - {row.StudentName} ({row.Department})", ln=True)
+        # --- TABLE HEADER ---
+        pdf.set_font("Arial", "B", 11)
+        col_widths = [20, 35, 50, 35, 50]  # Adjust widths as needed
+        headers = ["Seat No", "Roll No", "Student Name", "Department", "Subject"]
 
-    pdf_bytes = pdf.output(dest='S').encode('latin-1')
+        for i, header in enumerate(headers):
+            pdf.cell(col_widths[i], 10, header, border=1, align="C")
+        pdf.ln()
+
+        # --- TABLE ROWS ---
+        pdf.set_font("Arial", "", 10)
+        for _, row in room_group.iterrows():
+            pdf.cell(col_widths[0], 8, str(row["SeatNo"]), border=1, align="C")
+            pdf.cell(col_widths[1], 8, str(row["RollNo"]), border=1, align="C")
+            pdf.cell(col_widths[2], 8, str(row["StudentName"]), border=1)
+            pdf.cell(col_widths[3], 8, str(row["Department"]), border=1)
+            pdf.cell(col_widths[4], 8, str(row["Subject"]), border=1)
+            pdf.ln()
+
+        pdf.ln(5)
+
+    # Return PDF as BytesIO
+    pdf_bytes = pdf.output(dest='S').encode('latin1')
     bio = BytesIO(pdf_bytes)
     bio.seek(0)
     return bio
@@ -108,26 +125,17 @@ def generate_room_seating_pdf(allocation_df, exam_meta=None):
 # ----------------------------------------------------------
 # Hall Ticket Generator for Single Student
 # ----------------------------------------------------------
-
 def generate_hall_ticket_pdf(student):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", "B", 16)
+    pdf.set_auto_page_break(auto=True, margin=15)
 
-    pdf.cell(200, 10, txt="Exam Hall Ticket", ln=True, align="C")
-    pdf.ln(10)
+    # --- TITLE ---
+    pdf.set_font("Arial", "B", 18)
+    pdf.cell(0, 12, "Exam Hall Ticket", ln=True, align="C")
+    pdf.ln(8)
 
-    pdf.set_font("Arial", size=12)
-    pdf.cell(200, 10, txt=f"Name: {student['StudentName']}", ln=True)
-    pdf.cell(200, 10, txt=f"Roll No: {student['RollNo']}", ln=True)
-    pdf.cell(200, 10, txt=f"Department: {student['Department']}", ln=True)
-    pdf.cell(200, 10, txt=f"Subject: {student['Subject']}", ln=True)
-    pdf.cell(200, 10, txt=f"Exam Date: {student['ExamDate']}", ln=True)
-    pdf.cell(200, 10, txt=f"Exam Session: {student['ExamSession']}", ln=True)
-    pdf.cell(200, 10, txt=f"Room No: {student['RoomNo']}", ln=True)
-    pdf.ln(10)
-
-    # ✅ Generate QR code and save temporarily
+    # --- QR CODE ---
     qr_data = f"{student['RollNo']} - {student['StudentName']} - {student['Subject']} - {student['ExamDate']} - {student['RoomNo']}"
     qr_img = qrcode.make(qr_data)
 
@@ -135,20 +143,45 @@ def generate_hall_ticket_pdf(student):
         qr_img.save(tmp_qr.name)
         tmp_path = tmp_qr.name
 
-    # ✅ Add image to PDF
-    pdf.image(tmp_path, x=160, y=30, w=30, h=30)
+    # --- STUDENT DETAILS TABLE ---
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(0, 8, "Student Details", ln=True)
+    pdf.set_font("Arial", "", 11)
 
-    # ✅ Remove temporary file
+    line_height = 10
+    col1_width = 45
+    col2_width = 120
+
+    details = [
+        ("Name", student["StudentName"]),
+        ("Roll No", student["RollNo"]),
+        ("Department", student["Department"]),
+        ("Subject", student["Subject"]),
+        ("Exam Date", student["ExamDate"]),
+        ("Exam Session", student["ExamSession"]),
+        ("Room No", student["RoomNo"])
+    ]
+
+    x_start = pdf.get_x()
+    y_start = pdf.get_y()
+
+    # Draw table with borders
+    for key, value in details:
+        pdf.cell(col1_width, line_height, key, border=1)
+        pdf.cell(col2_width, line_height, str(value), border=1, ln=True)
+
+    # Add QR code aligned to top right
+    pdf.image(tmp_path, x=165, y=y_start, w=30, h=30)
     os.remove(tmp_path)
 
-    # ✅ Return as bytes (for Flask Response)
+    # --- FOOTER ---
+    pdf.ln(10)
+    pdf.set_font("Arial", "I", 10)
+    pdf.cell(0, 10, "Please bring this hall ticket and a valid ID card to the exam hall.", ln=True, align="C")
+
     pdf_bytes = pdf.output(dest='S').encode('latin1')
     return pdf_bytes
 
-
-# ----------------------------------------------------------
-# All Hall Tickets as ZIP
-# -----------------------------------------------------------
 
 def generate_all_hall_tickets_zip(allocation_df):
     """
