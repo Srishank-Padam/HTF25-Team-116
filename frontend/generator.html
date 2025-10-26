@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Automated Exam Seating Planner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Variables: Using the Colorful Dashboard Palette */
+        :root {
+            --primary-color: #4A148C; /* Deep Purple */
+            --secondary-color: #8E24AA; /* Medium Purple */
+            --accent-color-1: #FF8F00; /* Bright Orange (for CTA/Accent) */
+            --accent-color-2: #00BFA5; /* Teal Green */
+            --background-start: #F3E5F5;
+            --background-end: #EDE7F6;
+            --content-bg: rgba(255, 255, 255, 0.98); 
+            --text-dark: #311B92; /* Darker Purple for content text */
+            --text-medium: #616161;
+            --shadow-strong: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ===== Global Styling: Full-Page Layout & High-Contrast Colors (UPDATED) ===== */
+        body {
+            font-family: 'Poppins', sans-serif; /* Changed to Poppins */
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            /* Dynamic Colorful Background: Purple/Teal Gradient */
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color-2));
+            color: #fff; 
+            transition: background 0.5s ease;
+        }
+
+        /* Keyframes are kept but adjusted for visibility/theme */
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulseShadow {
+            /* Use a bright accent color for the pulse */
+            0% { box-shadow: 0 0 0 0 rgba(255, 143, 0, 0.4); } /* Orange pulse */
+            70% { box-shadow: 0 0 0 10px rgba(255, 143, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 143, 0, 0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* End Keyframes */
+
+        .container {
+            background: var(--content-bg);
+            padding: 40px 60px; 
+            border-radius: 12px;
+            box-shadow: var(--shadow-strong);
+            width: 90%; 
+            max-width: 800px; 
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+            color: var(--text-dark); 
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 40px; /* Slightly larger */
+            font-weight: 800;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+            animation: slideInUp 1s ease-out 0.2s backwards;
+        }
+
+        p {
+            font-family: 'Poppins', sans-serif;
+            font-size: 17px;
+            color: var(--text-medium); /* Used medium text color */
+            line-height: 1.6;
+            margin-bottom: 25px;
+            animation: slideInUp 1s ease-out 0.4s backwards;
+        }
+        
+        .row {
+            margin: 30px 0;
+            text-align: left;
+            animation: slideInUp 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+        }
+
+        .row[data-index="1"] { animation-delay: 0.6s; }
+        .row[data-index="2"] { animation-delay: 0.7s; }
+        
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--secondary-color); /* Medium Purple Label */
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .column-list {
+            list-style: none;
+            padding: 0;
+            margin-top: -10px;
+            margin-bottom: 20px;
+            text-align: left;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 25px;
+            animation: slideInUp 1s ease-out 0.8s backwards;
+        }
+
+        .column-list li {
+            font-size: 14px;
+            color: var(--text-medium); /* Used medium text color */
+            font-style: italic;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .column-list li::before {
+            content: '•';
+            color: var(--accent-color-1); /* Bright Orange bullet */
+            font-size: 1.2em;
+            font-weight: 700;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+
+        /* Input Styling with Animation */
+        input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #D1C4E9; /* Light Purple border */
+            border-radius: 8px;
+            background-color: #F8F4FA; /* Very Light Purple background */
+            transition: all 0.3s ease;
+            font-size: 16px;
+            color: var(--text-dark);
+            transform: scale(1);
+        }
+
+        input[type="file"]:hover {
+            background-color: #EFEAF4;
+            border-color: var(--accent-color-1); /* Bright Orange hover border */
+            transform: scale(1.005);
+        }
+        
+        input[type="file"]:focus {
+            outline: none;
+            border-color: var(--accent-color-1);
+            animation: pulseShadow 1.5s infinite; 
+        }
+
+        /* Call to Action Button */
+        .btn {
+            /* Bright Orange/Purple Gradient CTA */
+            background: linear-gradient(90deg, var(--accent-color-1), var(--primary-color)); 
+            color: #fff;
+            padding: 16px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            width: 100%;
+            /* Orange Shadow */
+            box-shadow: 0 8px 25px rgba(255, 143, 0, 0.4); 
+            letter-spacing: 1.5px;
+            margin-top: 25px;
+            animation: slideInUp 1s ease-out 1s backwards;
+        }
+
+        .btn:hover {
+            transform: translateY(-4px);
+            /* Stronger Orange Shadow */
+            box-shadow: 0 15px 35px rgba(255, 143, 0, 0.6);
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color-1));
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #E0E0E0; 
+            margin: 40px 0;
+            animation: fadeIn 1.5s ease-out 1.2s backwards;
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-size: 24px; /* Slightly larger */
+            font-weight: 700;
+            margin-bottom: 10px;
+            animation: slideInUp 1s ease-out 1.4s backwards;
+        }
+
+        code {
+            background: #F0F4F7;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: var(--secondary-color); /* Medium Purple code color */
+            font-weight: 600;
+            font-size: 95%;
+        }
+        
+        b {
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Automated Exam Seating Planner 🎓</h1>
+        <p>Upload your **single consolidated dataset** containing all student, room, and timetable information to instantly generate the seating plan.</p>
+
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="row" data-index="1">
+                <label>Consolidated Exam Data File (CSV/XLSX)</label>
+                
+                <p style="font-size: 15px; color: var(--primary-color); margin-bottom: 5px;">
+                    The file must contain **all** the following columns:
+                </p>
+
+                <ul class="column-list">
+                    <li><b>RollNo</b> (Student)</li>
+                    <li><b>Name</b> (Student)</li>
+                    <li><b>RoomNo</b> (Room)</li>
+                    <li><b>Capacity</b> (Room)</li>
+                    <li><b>SubjectCode</b> (Timetable)</li>
+                    <li><b>Date</b> (Timetable)</li>
+                    <li><b>Session</b> (Timetable)</li>
+                    <li><b>ExamName</b> (Timetable)</li>
+                </ul>
+
+                <input type="file" name="consolidated_data" accept=".csv,.xlsx" required>
+            </div>
+            
+            <button type="submit" class="btn">✨ GENERATE SEATING PLAN</button>
+        </form>
+
+        <hr>
+        <h3>Sample Data</h3>
+        <p style="animation-delay: 1.6s;">For development or quick trials, you can place a sample consolidated file into the <code>sample_data/</code> folder.</p>
+    </div>
+</body>
+</html>

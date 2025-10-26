@@ -1,0 +1,402 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard - Examzy</title>
+
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Updated Color Palette for a more Colorful Theme */
+        :root {
+            --primary-color: #4A148C; /* Deep Purple */
+            --secondary-color: #8E24AA; /* Medium Purple */
+            --accent-color-1: #FF8F00; /* Bright Orange */
+            --accent-color-2: #00BFA5; /* Teal Green */
+            --accent-color-3: #2979FF; /* Royal Blue */
+            
+            --background-light: #F3E5F5; /* Very light purple-pink */
+            --text-dark: #311B92; /* Darker Purple for text */
+            --text-light: #fdfdfd;
+            --card-bg: #ffffff;
+            --shadow-strong: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+            /* Message colors - retain for clarity */
+            --msg-error-bg: #ffebee; --msg-error-text: #C62828; --msg-error-border: #C62828;
+            --msg-success-bg: #e8f5e9; --msg-success-text: #2E7D32; --msg-success-border: #4CAF50;
+            --msg-warning-bg: #fffde7; --msg-warning-text: #FF6F00; --msg-warning-border: #FFB300;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0; 
+            background: linear-gradient(135deg, var(--background-light), #EDE7F6); 
+            color: var(--text-dark);
+        }
+
+        /* Top Navigation Bar */
+        .navbar {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); 
+            color: var(--text-light);
+            padding: 15px 40px;
+            box-shadow: var(--shadow-strong);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky; 
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar h2 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 26px; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        .logout-btn {
+            background-color: var(--accent-color-1); 
+            color: var(--text-light);
+            padding: 10px 20px; 
+            border: none;
+            border-radius: 25px; 
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .logout-btn:hover {
+            background-color: #FB8C00; 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Main Content Layout */
+        .dashboard-content {
+            padding: 0 40px; 
+            padding-top: 40px; 
+            padding-bottom: 40px; 
+            max-width: 1200px;
+            margin: 0 auto; 
+        }
+        .header {
+            margin-bottom: 40px; 
+            text-align: center;
+        }
+        .header h1 {
+            color: var(--primary-color);
+            font-weight: 800;
+            font-size: 42px; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .header p {
+            font-size: 18px;
+            color: var(--text-medium);
+            max-width: 700px;
+            margin: 10px auto 0;
+            line-height: 1.6;
+        }
+
+        /* Card Styles (Unchanged from previous colorful version) */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .card {
+            background-color: var(--card-bg);
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-strong);
+            transition: transform 0.3s cubic-bezier(.25,.8,.25,1), box-shadow 0.3s cubic-bezier(.25,.8,.25,1);
+            border-top: 8px solid; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; 
+        }
+        .card:hover {
+            transform: translateY(-8px); 
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        }
+        
+        #hallTicketCard { border-color: var(--accent-color-1); }
+        #invigilationCard { border-color: var(--accent-color-2); }
+        #seatingPlanCard { border-color: var(--accent-color-3); }
+
+        .card h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 26px;
+            border-bottom: 3px solid; 
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        #hallTicketCard h3 { border-color: var(--accent-color-1); }
+        #invigilationCard h3 { border-color: var(--accent-color-2); }
+        #seatingPlanCard h3 { border-color: var(--accent-color-3); }
+
+        .card p {
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 25px; 
+            flex-grow: 1; 
+        }
+
+        /* Action Section Styles (Unchanged) */
+        .action-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: auto;
+        }
+        select, input[type="text"], input[type="date"], .action-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 17px; 
+            box-sizing: border-box; 
+        }
+        select, input[type="text"], input[type="date"] {
+            border: 1px solid #D1C4E9; 
+            background-color: #F8F4FA; 
+            color: var(--text-dark);
+        }
+        select:focus, input[type="text"]:focus, input[type="date"]:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 4px rgba(142, 36, 170, 0.2); 
+        }
+
+        .action-btn {
+            color: var(--text-light);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .action-btn.hall-ticket-btn {
+            background: linear-gradient(90deg, #FFAB40, var(--accent-color-1)); 
+        }
+        .action-btn.hall-ticket-btn:hover {
+            background: linear-gradient(90deg, var(--accent-color-1), #FFC107);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255,143,0,0.4);
+        }
+        .action-btn.invigilation-btn {
+            background: linear-gradient(90deg, #1DE9B6, var(--accent-color-2)); 
+        }
+        .action-btn.invigilation-btn:hover {
+            background: linear-gradient(90deg, var(--accent-color-2), #64FFDA);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,191,165,0.4);
+        }
+        .action-btn.seating-btn {
+            background: linear-gradient(90deg, #448AFF, var(--accent-color-3)); 
+        }
+        .action-btn.seating-btn:hover {
+            background: linear-gradient(90deg, var(--accent-color-3), #82B1FF);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(41,121,255,0.4);
+        }
+
+        /* Message Styles (Unchanged) */
+        #downloadMessage, #invigilationMessage {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center; 
+            display: none;
+        }
+        #downloadMessage.msg-error, #invigilationMessage.msg-error {
+            background-color: var(--msg-error-bg); 
+            color: var(--msg-error-text); 
+            border: 1px solid var(--msg-error-border); 
+        }
+        #downloadMessage.msg-success, #invigilationMessage.msg-success {
+            background-color: var(--msg-success-bg); 
+            color: var(--msg-success-text); 
+            border: 1px solid var(--msg-success-border); 
+        }
+        #downloadMessage.msg-warning, #invigilationMessage.msg-warning {
+            background-color: var(--msg-warning-bg); 
+            color: var(--msg-warning-text); 
+            border: 1px solid var(--msg-warning-border); 
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <h2>Examzy - Faculty/Admin</h2> 
+        <button class="logout-btn" onclick="logout()">Log Out</button>
+    </div>
+
+    <div class="dashboard-content">
+        <div class="header">
+            <h1>Faculty Dashboard</h1>
+            <p>Welcome to your personalized portal. Manage academic resources and invigilation duties efficiently.</p>
+        </div>
+
+        <div class="card-container">
+            
+            <div class="card" id="hallTicketCard">
+                <h3>Download Hall Tickets 📄</h3>
+                <p>Access and download hall tickets for various examinations and branches.</p>
+                <div class="action-area">
+                    <select id="examSelect">
+                        <option value="">-- Select Examination --</option>
+                        <option value="MidTerm1">B.Tech Mid-Term I (Oct 2025)</option>
+                        <option value="EndSem">B.Tech End Semester (Dec 2025)</option>
+                        <option value="Supplementary">B.Tech Supplementary (Jan 2026)</option>
+                    </select>
+
+                    <select id="branchSelect">
+                        <option value="">-- Select Branch --</option>
+                        <option value="CSE">CSE</option>
+                        <option value="IT">IT</option>
+                        <option value="ECE">ECE</option>
+                        <option value="EEE">EEE</option>
+                    </select>
+
+                    <button class="action-btn hall-ticket-btn" onclick="downloadHallTickets()">
+                        Download PDF
+                    </button>
+                    <div id="downloadMessage"></div>
+                </div>
+            </div>
+
+            <div class="card" id="invigilationCard">
+                <h3>Check My Invigilation Room 🚨</h3>
+                <p>Quickly find your assigned examination room for upcoming invigilation duties.</p>
+                <div class="action-area">
+                    <input type="text" id="facultyID" placeholder="Enter Your Faculty ID (e.g., F1234)">
+
+                    <select id="sessionSelect">
+                        <option value="">-- Select Exam Session --</option>
+                        <option value="AM_25Oct">Today AM Session (9:30 AM)</option>
+                        <option value="PM_25Oct">Today PM Session (2:00 PM)</option>
+                        <option value="AM_26Oct">26 Oct AM Session</option>
+                    </select>
+
+                    <button class="action-btn invigilation-btn" onclick="checkMyInvigilation()">
+                        Check Assignment
+                    </button>
+                    <div id="invigilationMessage"></div>
+                </div>
+            </div>
+            
+            <div class="card" id="seatingPlanCard">
+                <h3>Seating Plan Generator 🗺️</h3>
+                <p>Generate optimized seating plans for examinations to ensure fair distribution.</p>
+                <div class="action-area">
+                    <button class="action-btn seating-btn">Generate Seating Plan</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        // Data for simulation: Faculty ID -> { Session -> Room }
+        const invigilationAssignments = {
+            'F1234': {
+                'AM_25Oct': 'Room A101 (Subject: DBMS)',
+                'PM_25Oct': 'None Assigned',
+                'AM_26Oct': 'Room C301 (Subject: Data Structures)'
+            },
+            'F5678': {
+                'AM_25Oct': 'None Assigned',
+                'PM_25Oct': 'Room B205 (Subject: Digital Electronics)',
+                'AM_26Oct': 'Room D102 (Subject: Thermodynamics)'
+            },
+            'F9012': {
+                'AM_25Oct': 'Room B205 (Subject: Operating Systems)',
+                'PM_25Oct': 'Room A101 (Subject: Web Technologies)',
+                'AM_26Oct': 'None Assigned'
+            }
+        };
+
+        function logout() {
+            alert("Logging out...");
+            window.location.href = 'login.html'; 
+        }
+
+        function downloadHallTickets() {
+            const exam = document.getElementById('examSelect').value;
+            const branch = document.getElementById('branchSelect').value;
+            const messageDiv = document.getElementById('downloadMessage');
+            
+            messageDiv.style.display = 'block';
+            messageDiv.className = '';
+
+            if (!exam || !branch) {
+                messageDiv.textContent = '❗ Please select both an Examination and a Branch.';
+                messageDiv.classList.add('msg-error');
+                return;
+            }
+
+            const fileName = `${exam}_HallTickets_${branch}.pdf`;
+            messageDiv.textContent = `⏳ Preparing and downloading: ${fileName}...`;
+            messageDiv.classList.add('msg-warning'); 
+
+            setTimeout(() => {
+                messageDiv.textContent = `✅ Successfully initiated download for ${fileName}.`;
+                messageDiv.classList.remove('msg-warning');
+                messageDiv.classList.add('msg-success');
+            }, 1500);
+        }
+
+        function checkMyInvigilation() {
+            const facultyID = document.getElementById('facultyID').value.trim().toUpperCase();
+            const session = document.getElementById('sessionSelect').value;
+            const messageDiv = document.getElementById('invigilationMessage');
+            
+            messageDiv.style.display = 'block';
+            messageDiv.className = '';
+
+            if (!facultyID || !session) {
+                messageDiv.textContent = '❗ Please enter your Faculty ID and select an Exam Session.';
+                messageDiv.classList.add('msg-error');
+                return;
+            }
+
+            messageDiv.textContent = `⏳ Checking assignment for ID ${facultyID} during ${session}...`;
+            messageDiv.classList.add('msg-warning');
+
+            setTimeout(() => {
+                const facultyData = invigilationAssignments[facultyID];
+
+                if (!facultyData) {
+                    messageDiv.textContent = `❌ Error: Faculty ID "${facultyID}" not found in the assignment list.`;
+                    messageDiv.classList.remove('msg-warning');
+                    messageDiv.classList.add('msg-error');
+                } else {
+                    const roomAssigned = facultyData[session];
+                    
+                    if (roomAssigned && roomAssigned !== 'None Assigned') {
+                        // The primary color variable is used for emphasis in the success message
+                        const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+                        messageDiv.innerHTML = `🟢 **Your Invigilation Room:** <span style="color:${primaryColor}">${roomAssigned}</span>.<br>Please report 15 mins prior to the session.`;
+                        messageDiv.classList.remove('msg-warning');
+                        messageDiv.classList.add('msg-success');
+                    } else {
+                        messageებულიtextContent = `🟡 No Assignment: You do not have invigilation duty for the selected session.`;
+                        messageDiv.classList.remove('msg-warning');
+                        messageDiv.classList.add('msg-warning');
+                    }
+                }
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
