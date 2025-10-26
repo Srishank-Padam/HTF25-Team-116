@@ -1,26 +1,48 @@
 import pandas as pd
 import random
-import qrcode
 from io import BytesIO
 from fpdf import FPDF
-import zipfile
 import io
-import os
-import tempfile
+import zipfile
 
 
 # ----------------------------------------------------------
-# Helper for separating roll prefixes to avoid adjacency
+# Data Cleaning Utility
+# ----------------------------------------------------------
+def clean_dataframe(df, file_type=None):
+    df = df.copy()
+    df = df.dropna(how="all")
+
+    # Normalize column names
+    df.columns = [c.strip().replace(" ", "") for c in df.columns]
+
+    # Trim spaces from string fields
+    for col in df.columns:
+        if df[col].dtype == "object":
+            df[col] = df[col].astype(str).str.strip()
+
+    # Drop complete duplicates
+    df = df.drop_duplicates()
+
+    # Enforce unique RoomNo or RollNo
+    if file_type == "rooms" and "RoomNo" in df.columns:
+        df = df.drop_duplicates(subset=["RoomNo"], keep="first")
+    elif file_type == "timetable" and "RollNo" in df.columns:
+        df = df.drop_duplicates(subset=["RollNo"], keep="first")
+
+    return df
+
+
+# ----------------------------------------------------------
+# Seat allocation logic (randomized)
 # ----------------------------------------------------------
 def _separate_adjacent_prefixes(roll_list):
     prefix_map = {}
     for roll in roll_list:
         prefix = ''.join(filter(str.isalpha, str(roll)))
         prefix_map.setdefault(prefix, []).append(roll)
-
     for prefix in prefix_map:
         random.shuffle(prefix_map[prefix])
-
     separated = []
     while any(prefix_map.values()):
         for prefix, rolls in list(prefix_map.items()):
@@ -29,25 +51,19 @@ def _separate_adjacent_prefixes(roll_list):
     return separated
 
 
-# ----------------------------------------------------------
-# Seat allocation logic with randomization + prefix handling
-# ----------------------------------------------------------
 def generate_seating_arrangement(timetable_df, rooms_df):
-    if timetable_df is None or rooms_df is None:
-        raise ValueError("Timetable or Rooms data not provided")
-
     timetable_df = timetable_df.copy()
+    rooms_df = rooms_df.copy()
+
     timetable_df["RollNo"] = timetable_df["RollNo"].astype(str).str.strip()
-    timetable_df["RoomNo"] = timetable_df["RoomNo"].astype(str).str.strip()
+    room_list = list(rooms_df["RoomNo"].unique())
+    room_capacities = dict(zip(rooms_df["RoomNo"], rooms_df["Capacity"]))
 
     seating_records = []
     grouped = timetable_df.groupby(["ExamDate", "ExamSession"])
 
     for (exam_date, exam_session), group in grouped:
-        room_list = list(rooms_df["RoomNo"])
-        room_capacities = dict(zip(rooms_df["RoomNo"], rooms_df["Capacity"]))
         students = group.sample(frac=1).reset_index(drop=True)
-
         roll_numbers = _separate_adjacent_prefixes(students["RollNo"].tolist())
 
         student_idx = 0
@@ -70,87 +86,97 @@ def generate_seating_arrangement(timetable_df, rooms_df):
                 })
                 student_idx += 1
 
-    allocation_df = pd.DataFrame(seating_records)
-    return allocation_df
+    return pd.DataFrame(seating_records)
 
 
 # ----------------------------------------------------------
-# Room Seating PDF Generator
+# Room Seating PDF Generator (Professional look)
 # ----------------------------------------------------------
+class StyledPDF(FPDF):
+    pass
+
 
 def generate_room_seating_pdf(allocation_df, exam_meta=None):
-    pdf = FPDF()
+    pdf = StyledPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
 
     for room_no, room_group in allocation_df.groupby("RoomNo"):
         pdf.add_page()
 
-        # --- HEADER ---
-        pdf.set_font("Arial", "B", 16)
-        pdf.cell(0, 10, f"Room Seating Arrangement - {room_no}", ln=True, align="C")
+        # Header bar
+        pdf.set_fill_color(240, 245, 250)
+        pdf.rect(0, 0, 210, 25, "F")
 
-        pdf.set_font("Arial", "I", 12)
+        pdf.set_font("Helvetica", "B", 18)
+        pdf.set_text_color(20, 50, 80)
+        pdf.cell(0, 15, f"Room Seating Arrangement", ln=True, align="C")
+
+        pdf.set_font("Helvetica", "", 12)
+        pdf.set_text_color(80, 80, 80)
+        pdf.cell(0, 8, f"Room: {room_no}", ln=True, align="C")
         if exam_meta:
-            pdf.cell(0, 8, f"Exam Date: {exam_meta.get('ExamDate', '')} | Session: {exam_meta.get('ExamSession', '')}", ln=True, align="C")
-        pdf.ln(5)
+            pdf.cell(0, 8,
+                     f"Date: {exam_meta.get('ExamDate', '')}   |   Session: {exam_meta.get('ExamSession', '')}",
+                     ln=True, align="C")
 
-        # --- TABLE HEADER ---
-        pdf.set_font("Arial", "B", 11)
-        col_widths = [20, 35, 50, 35, 50]  # Adjust widths as needed
+        pdf.ln(10)
+
+        # Table header
         headers = ["Seat No", "Roll No", "Student Name", "Department", "Subject"]
+        col_widths = [20, 35, 55, 35, 45]
 
+        pdf.set_font("Helvetica", "B", 11)
+        pdf.set_fill_color(225, 230, 235)
+        pdf.set_text_color(0, 0, 0)
         for i, header in enumerate(headers):
-            pdf.cell(col_widths[i], 10, header, border=1, align="C")
+            pdf.cell(col_widths[i], 9, header, border=1, align="C", fill=True)
         pdf.ln()
 
-        # --- TABLE ROWS ---
-        pdf.set_font("Arial", "", 10)
+        # Table rows
+        pdf.set_font("Helvetica", "", 10)
+        pdf.set_text_color(40, 40, 40)
+        pdf.set_fill_color(248, 250, 252)
+        fill = False
+
         for _, row in room_group.iterrows():
-            pdf.cell(col_widths[0], 8, str(row["SeatNo"]), border=1, align="C")
-            pdf.cell(col_widths[1], 8, str(row["RollNo"]), border=1, align="C")
-            pdf.cell(col_widths[2], 8, str(row["StudentName"]), border=1)
-            pdf.cell(col_widths[3], 8, str(row["Department"]), border=1)
-            pdf.cell(col_widths[4], 8, str(row["Subject"]), border=1)
+            pdf.cell(col_widths[0], 8, str(row["SeatNo"]), border=1, align="C", fill=fill)
+            pdf.cell(col_widths[1], 8, str(row["RollNo"]), border=1, align="C", fill=fill)
+            pdf.cell(col_widths[2], 8, str(row["StudentName"]), border=1, fill=fill)
+            pdf.cell(col_widths[3], 8, str(row["Department"]), border=1, fill=fill)
+            pdf.cell(col_widths[4], 8, str(row["Subject"]), border=1, fill=fill)
             pdf.ln()
+            fill = not fill  # alternate row background
 
-        pdf.ln(5)
-
-    # Return PDF as BytesIO
-    pdf_bytes = pdf.output(dest='S').encode('latin1')
+    pdf_bytes = pdf.output(dest="S")
     bio = BytesIO(pdf_bytes)
     bio.seek(0)
     return bio
 
 
 # ----------------------------------------------------------
-# Hall Ticket Generator for Single Student
+# Hall Ticket PDF Generator (Professional Layout)
 # ----------------------------------------------------------
 def generate_hall_ticket_pdf(student):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=15)
 
-    # --- TITLE ---
-    pdf.set_font("Arial", "B", 18)
-    pdf.cell(0, 12, "Exam Hall Ticket", ln=True, align="C")
-    pdf.ln(8)
+    title_color = (30, 60, 100)
+    box_bg = (245, 247, 250)
+    border_color = (180, 180, 180)
 
-    # --- QR CODE ---
-    qr_data = f"{student['RollNo']} - {student['StudentName']} - {student['Subject']} - {student['ExamDate']} - {student['RoomNo']}"
-    qr_img = qrcode.make(qr_data)
+    pdf.set_fill_color(235, 240, 245)
+    pdf.rect(0, 0, 210, 25, "F")
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_qr:
-        qr_img.save(tmp_qr.name)
-        tmp_path = tmp_qr.name
+    pdf.set_font("Helvetica", "B", 20)
+    pdf.set_text_color(*title_color)
+    pdf.cell(0, 15, "EXAM HALL TICKET", ln=True, align="C")
+    pdf.set_text_color(0, 0, 0)
+    pdf.ln(5)
 
-    # --- STUDENT DETAILS TABLE ---
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 8, "Student Details", ln=True)
-    pdf.set_font("Arial", "", 11)
-
-    line_height = 10
-    col1_width = 45
-    col2_width = 120
+    pdf.set_draw_color(*border_color)
+    pdf.set_fill_color(*box_bg)
+    pdf.set_font("Helvetica", "", 12)
 
     details = [
         ("Name", student["StudentName"]),
@@ -159,46 +185,41 @@ def generate_hall_ticket_pdf(student):
         ("Subject", student["Subject"]),
         ("Exam Date", student["ExamDate"]),
         ("Exam Session", student["ExamSession"]),
-        ("Room No", student["RoomNo"])
+        ("Room No", student["RoomNo"]),
     ]
 
-    x_start = pdf.get_x()
-    y_start = pdf.get_y()
+    col1_width, col2_width, line_height = 50, 120, 10
+    for key, val in details:
+        pdf.set_font("Helvetica", "B", 12)
+        pdf.cell(col1_width, line_height, key, border=1, fill=True)
+        pdf.set_font("Helvetica", "", 12)
+        pdf.cell(col2_width, line_height, str(val), border=1, ln=True, fill=True)
 
-    # Draw table with borders
-    for key, value in details:
-        pdf.cell(col1_width, line_height, key, border=1)
-        pdf.cell(col2_width, line_height, str(value), border=1, ln=True)
+    pdf.ln(12)
+    pdf.set_font("Helvetica", "I", 10)
+    pdf.set_text_color(90, 90, 90)
+    pdf.multi_cell(0, 8,
+                   "Please bring this hall ticket and a valid ID card to the examination hall.\n"
+                   "Ensure you are present at least 15 minutes before the scheduled start time.",
+                   align="C")
 
-    # Add QR code aligned to top right
-    pdf.image(tmp_path, x=165, y=y_start, w=30, h=30)
-    os.remove(tmp_path)
+    pdf.ln(15)
+    pdf.set_font("Helvetica", "", 11)
+    pdf.cell(0, 10, "Signature of Controller of Examinations", ln=True, align="R")
 
-    # --- FOOTER ---
-    pdf.ln(10)
-    pdf.set_font("Arial", "I", 10)
-    pdf.cell(0, 10, "Please bring this hall ticket and a valid ID card to the exam hall.", ln=True, align="C")
-
-    pdf_bytes = pdf.output(dest='S').encode('latin1')
+    pdf_bytes = pdf.output(dest="S")
     return pdf_bytes
 
 
+# ----------------------------------------------------------
+# Generate all hall tickets ZIP
+# ----------------------------------------------------------
 def generate_all_hall_tickets_zip(allocation_df):
-    """
-    Generate a ZIP of all hall ticket PDFs.
-    """
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
         for _, student in allocation_df.iterrows():
-            pdf_bytes = generate_hall_ticket_pdf(student)  # returns BytesIO or bytes
+            pdf_bytes = generate_hall_ticket_pdf(student)
             roll_no_safe = str(student['RollNo']).strip().replace(' ', '_')
-            filename = f"hall_ticket_{roll_no_safe}.pdf"
-            
-            # If pdf_bytes is BytesIO, use getvalue()
-            if isinstance(pdf_bytes, BytesIO):
-                zipf.writestr(filename, pdf_bytes.getvalue())
-            else:
-                zipf.writestr(filename, pdf_bytes)
-
+            zipf.writestr(f"hall_ticket_{roll_no_safe}.pdf", pdf_bytes)
     zip_buffer.seek(0)
     return zip_buffer
