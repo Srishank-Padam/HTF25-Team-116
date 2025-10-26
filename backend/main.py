@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, send_file, session
 import pandas as pd
 from functools import wraps
-from util6 import (
+from utils import (
     generate_seating_arrangement,
     generate_room_seating_pdf,
     generate_hall_ticket_pdf,
@@ -125,14 +125,17 @@ def generate_hall_ticket(roll_no):
 
 
 @app.route('/download_all_halltickets', methods=['GET'])
-@faculty_only
 def download_all_halltickets():
     global allocation_df
-    if allocation_df is None or allocation_df.empty:
+    if allocation_df is None:
         return jsonify({"error": "Seating not generated yet"}), 400
 
     zip_bytes = generate_all_hall_tickets_zip(allocation_df)
-    return send_file(zip_bytes, mimetype='application/zip', as_attachment=True, download_name='All_HallTickets.zip')
+    return send_file(
+        zip_bytes,
+        mimetype='application/zip',
+        download_name='all_hall_tickets.zip'
+    )
 
 
 @app.route('/logout', methods=['POST'])
