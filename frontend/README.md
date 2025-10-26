@@ -55,8 +55,7 @@ The Automated Exam Seating Planner simplifies and streamlines the complex task o
 │
 ├── frontend/
 │   ├── login.html      # The main login/authentication page
-│   ├── dashboard.html  # The central command center for faculty
-│   └── generator.html  # The page to upload data
+│   └── generator.html  # The page to upload data and receive the output
 │
 └── README.md           # This file
 
