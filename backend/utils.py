@@ -4,11 +4,16 @@ import qrcode
 from io import BytesIO
 from fpdf import FPDF
 import zipfile
+import os
+import tempfile
+import io
+
 
 
 # ----------------------------------------------------------
 # Helper for separating roll prefixes to avoid adjacency
 # ----------------------------------------------------------
+
 def _separate_adjacent_prefixes(roll_list):
     prefix_map = {}
     for roll in roll_list:
@@ -29,6 +34,7 @@ def _separate_adjacent_prefixes(roll_list):
 # ----------------------------------------------------------
 # Seat allocation logic with randomization + prefix handling
 # ----------------------------------------------------------
+
 def generate_seating_arrangement(timetable_df, rooms_df):
     if timetable_df is None or rooms_df is None:
         raise ValueError("Timetable or Rooms data not provided")
@@ -74,6 +80,7 @@ def generate_seating_arrangement(timetable_df, rooms_df):
 # ----------------------------------------------------------
 # Room Seating PDF Generator
 # ----------------------------------------------------------
+
 def generate_room_seating_pdf(allocation_df, exam_meta=None):
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -101,10 +108,6 @@ def generate_room_seating_pdf(allocation_df, exam_meta=None):
 # ----------------------------------------------------------
 # Hall Ticket Generator for Single Student
 # ----------------------------------------------------------
-import os
-import tempfile
-import qrcode
-from fpdf import FPDF
 
 def generate_hall_ticket_pdf(student):
     pdf = FPDF()
@@ -145,13 +148,24 @@ def generate_hall_ticket_pdf(student):
 
 # ----------------------------------------------------------
 # All Hall Tickets as ZIP
-# ----------------------------------------------------------
+# -----------------------------------------------------------
+
 def generate_all_hall_tickets_zip(allocation_df):
-    zip_buffer = BytesIO()
-    with zipfile.ZipFile(zip_buffer, "w") as zipf:
-        for _, row in allocation_df.iterrows():
-            pdf_bytes = generate_hall_ticket_pdf(row)
-            filename = f"HallTicket_{row['RollNo']}.pdf"
-            zipf.writestr(filename, pdf_bytes.read())
+    """
+    Generate a ZIP of all hall ticket PDFs.
+    """
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for _, student in allocation_df.iterrows():
+            pdf_bytes = generate_hall_ticket_pdf(student)  # returns BytesIO or bytes
+            roll_no_safe = str(student['RollNo']).strip().replace(' ', '_')
+            filename = f"hall_ticket_{roll_no_safe}.pdf"
+            
+            # If pdf_bytes is BytesIO, use getvalue()
+            if isinstance(pdf_bytes, BytesIO):
+                zipf.writestr(filename, pdf_bytes.getvalue())
+            else:
+                zipf.writestr(filename, pdf_bytes)
+
     zip_buffer.seek(0)
     return zip_buffer
