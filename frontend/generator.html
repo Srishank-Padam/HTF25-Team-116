@@ -24,7 +24,7 @@
 
         /* ===== Global Styling: Full-Page Layout & High-Contrast Colors (UPDATED) ===== */
         body {
-            font-family: 'Poppins', sans-serif; /* Changed to Poppins */
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
             min-height: 100vh;
@@ -71,7 +71,7 @@
 
         h1 {
             color: var(--primary-color);
-            font-size: 40px; /* Slightly larger */
+            font-size: 40px; 
             font-weight: 800;
             margin-bottom: 5px;
             letter-spacing: -1px;
@@ -81,7 +81,7 @@
         p {
             font-family: 'Poppins', sans-serif;
             font-size: 17px;
-            color: var(--text-medium); /* Used medium text color */
+            color: var(--text-medium); 
             line-height: 1.6;
             margin-bottom: 25px;
             animation: slideInUp 1s ease-out 0.4s backwards;
@@ -93,14 +93,17 @@
             animation: slideInUp 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
         }
 
-        .row[data-index="1"] { animation-delay: 0.6s; }
-        .row[data-index="2"] { animation-delay: 0.7s; }
+        /* Animation delays for all rows */
+        .row[data-index="1"] { animation-delay: 0.6s; } 
+        .row[data-index="2"] { animation-delay: 0.7s; } 
+        .row[data-index="3"] { animation-delay: 1.6s; } /* Hall Tickets Single Download */
+        .row[data-index="4"] { animation-delay: 2.0s; } /* Hall Tickets Bulk Download */
         
         label {
             display: block;
             font-weight: 700;
             margin-bottom: 8px;
-            color: var(--secondary-color); /* Medium Purple Label */
+            color: var(--secondary-color); 
             font-size: 15px;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -120,7 +123,7 @@
 
         .column-list li {
             font-size: 14px;
-            color: var(--text-medium); /* Used medium text color */
+            color: var(--text-medium); 
             font-style: italic;
             position: relative;
             padding-left: 15px;
@@ -128,7 +131,7 @@
         
         .column-list li::before {
             content: '•';
-            color: var(--accent-color-1); /* Bright Orange bullet */
+            color: var(--accent-color-1); 
             font-size: 1.2em;
             font-weight: 700;
             position: absolute;
@@ -136,32 +139,36 @@
             top: -2px;
         }
 
-        /* Input Styling with Animation */
-        input[type="file"] {
+        /* Input Styling */
+        input[type="file"], input[type="text"] {
             width: 100%;
             padding: 15px;
-            border: 2px solid #D1C4E9; /* Light Purple border */
+            border: 2px solid #D1C4E9; 
             border-radius: 8px;
-            background-color: #F8F4FA; /* Very Light Purple background */
+            background-color: #F8F4FA; 
             transition: all 0.3s ease;
             font-size: 16px;
             color: var(--text-dark);
             transform: scale(1);
         }
-
-        input[type="file"]:hover {
+        
+        input[type="text"] {
+             margin-bottom: 20px;
+        }
+        
+        input[type="file"]:hover, input[type="text"]:hover {
             background-color: #EFEAF4;
-            border-color: var(--accent-color-1); /* Bright Orange hover border */
+            border-color: var(--accent-color-1); 
             transform: scale(1.005);
         }
         
-        input[type="file"]:focus {
+        input[type="file"]:focus, input[type="text"]:focus {
             outline: none;
             border-color: var(--accent-color-1);
             animation: pulseShadow 1.5s infinite; 
         }
 
-        /* Call to Action Button */
+        /* Call to Action Button - Primary (Orange/Purple) */
         .btn {
             /* Bright Orange/Purple Gradient CTA */
             background: linear-gradient(90deg, var(--accent-color-1), var(--primary-color)); 
@@ -188,6 +195,43 @@
             background: linear-gradient(90deg, var(--primary-color), var(--accent-color-1));
         }
 
+        /* Call to Action Button - Secondary (Teal/Purple) */
+        .btn-secondary {
+            /* Teal Green/Purple Gradient CTA */
+            background: linear-gradient(90deg, var(--accent-color-2), var(--secondary-color)); 
+            color: #fff;
+            padding: 16px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px; 
+            font-weight: 700;
+            transition: all 0.3s ease;
+            width: 100%; 
+            /* Teal Shadow */
+            box-shadow: 0 8px 25px rgba(0, 191, 165, 0.4); 
+            letter-spacing: 1.5px;
+            margin-top: 20px; /* Adjusted for section-specific use */
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-4px);
+            /* Stronger Teal Shadow */
+            box-shadow: 0 15px 35px rgba(0, 191, 165, 0.6);
+            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color-2));
+        }
+        
+        /* Specific style for the Bulk Download Button (Purple Gradient) */
+        .btn-bulk {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 8px 25px rgba(74, 20, 140, 0.4);
+        }
+        
+        .btn-bulk:hover {
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            box-shadow: 0 15px 35px rgba(74, 20, 140, 0.6);
+        }
+        
         hr {
             border: none;
             border-top: 1px solid #E0E0E0; 
@@ -197,17 +241,24 @@
 
         h3 {
             color: var(--primary-color);
-            font-size: 24px; /* Slightly larger */
+            font-size: 24px; 
             font-weight: 700;
             margin-bottom: 10px;
             animation: slideInUp 1s ease-out 1.4s backwards;
+        }
+        
+        /* Specific styling for the new sections' headers/descriptions */
+        .section-header {
+             text-align: center; 
+             margin: 0 auto 15px;
+             max-width: 500px;
         }
 
         code {
             background: #F0F4F7;
             padding: 3px 8px;
             border-radius: 4px;
-            color: var(--secondary-color); /* Medium Purple code color */
+            color: var(--secondary-color); 
             font-weight: 600;
             font-size: 95%;
         }
@@ -250,8 +301,40 @@
         </form>
 
         <hr>
+        
+        <div class="row" data-index="3" style="margin: 0 auto; max-width: 500px;">
+            <div class="section-header">
+                <h3>Download Hall Ticket 📄</h3>
+                <p style="animation-delay: 1.6s;">Enter **Roll Number** to instantly download an individual Hall Ticket (PDF).</p>
+            </div>
+
+            <form action="/download-halltickets-single" method="get">
+                <label for="rollno_input">Enter Roll Number</label>
+                <input type="text" id="rollno_input" name="rollno" placeholder="e.g., 160124771152" required>
+                
+                <button type="submit" class="btn-secondary">DOWNLOAD HALL TICKET</button>
+            </form>
+        </div>
+        
+        <hr style="animation-delay: 1.9s;">
+
+        <div class="row" data-index="4" style="margin: 0 auto; max-width: 500px;">
+            <div class="section-header">
+                <h3>Download All Hall Tickets (ZIP) 📦</h3>
+                <p style="animation-delay: 2.1s; margin-bottom: 10px;">Downloads a single ZIP file containing all generated hall tickets.</p>
+            </div>
+            
+            <form action="/download-halltickets-bulk-zip" method="get">
+                 <button type="submit" class="btn-secondary btn-bulk">
+                    DOWNLOAD ALL HALL TICKETS AS ZIP FILE
+                </button>
+            </form>
+        </div>
+
+        <hr style="animation-delay: 2.4s;">
+        
         <h3>Sample Data</h3>
-        <p style="animation-delay: 1.6s;">For development or quick trials, you can place a sample consolidated file into the <code>sample_data/</code> folder.</p>
+        <p style="animation-delay: 2.6s;">For development or quick trials, you can place a sample consolidated file into the <code>sample_data/</code> folder.</p>
     </div>
 </body>
 </html>
