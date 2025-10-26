@@ -1,82 +1,81 @@
 # HTF25-Team-116
 
-# 🧠 Examzy – Automated Exam Seating Planner
+# 🧠 Examzy - Automated Exam Seating Planner
 
-**Examzy** is a web-based application designed to simplify and automate the exam seating arrangement process.  
-It allows **faculty** to generate seating plans and allocate rooms, while **students** can easily check and download their **hall tickets**.
+**Examzy** is a full-stack application designed to automate the complex and time-consuming task of exam seating arrangement. It provides a backend API for processing data and generating all necessary documents, along with a visual frontend prototype for an intuitive faculty-facing user interface.
 
----
+## Problem Statement
+
+The Automated Exam Seating Planner simplifies and streamlines the complex task of organizing exam seating arrangements in colleges and universities. It automates the generation of seating charts based on inputs like student lists, roll numbers, subject codes, and classroom capacities, ensuring fair distribution of students across rooms. The system includes features such as randomized seat allocation to minimize malpractice, support for multiple exam sessions, and instant conflict detection for overlapping exams. It also produces printable seating charts, room-wise allotments, and individual hall tickets for easy distribution.
+
+## Proposed Solution
+
+**Examzy** is a user-friendly and secure portal for faculty and administrators. After signing in, users are brought to a central dashboard that provides direct access to the three most critical exam management tasks. From this single screen, faculty can instantly **generate a new seating plan**, **download student hall tickets** for a specific exam, or quickly **check their own invigilation assignments**. This design streamlines the entire process, organizing all essential tools into one simple and efficient command center.
 
 ## 🚀 Features
 
-### 👨‍🎓 Student Side
-- Secure student login with email & password  
-- View allotted room for the exam  
-- Download hall ticket in PDF format  
+### Backend (API)
+* **Smart Seat Allocation:** Randomizes student lists and separates them by roll number prefixes to minimize malpractice.
+* **PDF Room Charts:** Dynamically generates PDF files for each exam room, showing the seat-by-seat student allotment.
+* **QR-Coded Hall Tickets:** Generates individual PDF hall tickets for each student, complete with a unique QR code for verification.
+* **Bulk Download:** Creates a single `.zip` file containing all generated hall tickets for easy distribution.
+* **Secure:** Includes a basic, extendable authentication system for faculty-only access.
 
-### 👩‍🏫 Faculty Side
-- Secure faculty login with email & password  
-- Generate automated seat allocations  
-- View allotted rooms  
-- Manage and verify seating plans  
+### Frontend (UI Prototype)
+* **Secure Faculty Login:** A dedicated login page with client-side validation.
+* **Centralized Dashboard:** A main hub providing access to all core functions in a clean, card-based layout.
+* **Seating Plan Generator:** A simple page for an administrator to upload a single consolidated data file.
+* **Hall Ticket Downloader:** A tool on the dashboard to simulate downloading hall tickets, filterable by exam and branch.
+* **Invigilation Check:** A utility for faculty to quickly check their assigned invigilation room.
 
 ---
 
 ## 🧩 Tech Stack
 
-| Component | Technology Used |
-|------------|-----------------|
-| Frontend | HTML, CSS, JavaScript |
-| Styling | Custom CSS colors & layout |
-| Backend (optional future upgrade) | PHP / Python Flask / Node.js |
-| Database (optional) | MySQL or SQLite |
-| IDE Used | VS Code |
+| Component | Technology / Library | Purpose |
+| :--- | :--- | :--- |
+| **Frontend** | HTML5 | Provides the structure for the login, dashboard, and generator pages. |
+| **Frontend** | CSS3 | Used for all styling, layout (Flexbox/Grid), animations, and the colorful UI. |
+| **Frontend** | JavaScript | Powers client-side interactivity, form validation, and dynamic messages. |
+| **Frontend Service**| Google Fonts | Imports the 'Poppins' font to ensure a modern and consistent typography. |
+| **Backend Framework** | Flask | Creates the web server, API routes (`/login`, `/upload`), and handles requests. |
+| **Data Handling** | Pandas | Reads, processes, and manipulates the uploaded CSV/Excel data. |
+| **PDF Generation** | FPDF (pyfpdf) | Dynamically generates PDF documents for hall tickets and room charts. |
+| **QR Code Generation**| qrcode | Creates unique QR codes for embedding in the student hall tickets. |
+| **File Handling** | ZipFile | Packages all generated hall tickets into a single downloadable ZIP archive. |
+| **Core Language** | Python | The primary language used for all backend logic and data processing. |
 
 ---
 
-## 📁 Frontend Files
+## 📁 File Structure
 
-| File Name | Description |
-|------------|-------------|
-| `index.html` | Common welcome page titled **SmartInvigilate**, allows user to choose between *Student* or *Faculty*. |
-| `student_login.html` | Login page for students (Email & Password). |
-| `faculty_login.html` | Login page for faculty (Email & Password). |
-| `student_dashboard.html` | Student portal to view and download their hall ticket and view allotted room. |
-| `faculty_dashboard.html` | Faculty dashboard to generate seat allocation and view allotted rooms. |
+├── backend/
+│   ├── main.py         # Flask server, API routes
+│   └── util.py         # Core logic for PDF/QR/ZIP generation
+│
+├── frontend/
+│   ├── login.html      # The main login/authentication page
+│   ├── dashboard.html  # The central command center for faculty
+│   └── generator.html  # The page to upload data
+│
+└── README.md           # This file
 
 ---
-
-## 🖥️ Preview Screens (Optional)
-
-| Page | Screenshot |
-|------|-------------|
-| Welcome Page | ![Welcome](screenshots/welcome.png) |
-| Student Login | ![Student Login](screenshots/student_login.png) |
-| Faculty Login | ![Faculty Login](screenshots/faculty_login.png) |
-| Faculty Dashboard | ![Faculty Dashboard](screenshots/faculty_dashboard.png) |
-
 
 ## ⚙️ How to Run
 
-Follow the steps below to set up and run the **Examzy** project locally:
+This project has two parts (backend and frontend) that are run separately.
 
-1. **Download or Clone the Repository**
 
-   ```bash
-   git clone https://github.com/yourusername/examzy.git
+### 2. Frontend (UI Prototype)
 
-Open the Project Folder
+1.  **Navigate to the frontend folder:**
+    ```bash
+    cd frontend
+    ```
+2.  **Open the files in your browser:**
+    * Open `login.html` to see the login page.
+    * Open `dashboard.html` to see the main dashboard.
+    * Open `generator.html` to see the file upload page.
 
-Navigate to the cloned folder using Visual Studio Code (VS Code) or any preferred code editor.
-
-Run the Application
-
-Open the index.html file directly in your web browser.
-
-Explore the Application
-
-Navigate between the portals:
-
-👨‍🎓 Student Portal: Login to view allotted rooms and download hall tickets.
-
-👩‍🏫 Faculty Portal: Login to generate seat allocations and view allotted rooms.
+**Note:** The frontend files are a **prototype** and are not yet connected to the
