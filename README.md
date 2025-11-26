@@ -1,68 +1,76 @@
-﻿# HTF25-Team-116
+# HTF25-Team-116
 
-## GitHub submission guide
+# 🧠 Examzy - Automated Exam Seating Planner
 
-In this Readme, you will find a guide on how to fork this Repository, add files to it, and make a pull request to contribute your changes.
+**Examzy** is a full-stack application designed to automate the complex and time-consuming task of exam seating arrangement. It provides a backend API for processing data and generating all necessary documents, along with a visual frontend prototype for an intuitive faculty-facing user interface.
 
-<details open>
-<summary><h3>1. Login to your GitHub Account</h3></summary>
-<br>
-<p>Go to <a href="https://github.com">github.com</a> to log in.</p>
-<ul>
-   <li>Open the <a href="https://github.com/cbitosc/HTF25-Team-116">current repo</a> in a new tab.</li>
-   <li>Perform all operations in the newly opened tab, and follow the current tab for instructions.</li>
-</ul>
-</details>
+## Problem Statement
 
-<details open>
-<summary><h3>2. Fork the Repository</h3></summary>
-<br>
-<p align="center">
-  <img src="fork.jpeg" alt="Fork the Repository" height="300">
-</p>
-<ul>
- <li>In the newly opened tab, on the top-right corner, click on <b>Fork</b>.</li>
- <li>Enter the <b>Repository Name</b> as <b>HTF25-Team-116</b>.</li>
- <li>Then click <b>Create Fork</b>, leaving all other fields as default.</li>
- <li>After a few moments, you can view your forked repo.</li>
-</ul>
-</details>
+The Automated Exam Seating Planner simplifies and streamlines the complex task of organizing exam seating arrangements in colleges and universities. It automates the generation of seating charts based on inputs like student lists, roll numbers, subject codes, and classroom capacities, ensuring fair distribution of students across rooms. The system includes features such as randomized seat allocation to minimize malpractice, support for multiple exam sessions, and instant conflict detection for overlapping exams. It also produces printable seating charts, room-wise allotments, and individual hall tickets for easy distribution.
 
-<details open>
-<summary><h3>3. Clone your Repository</h3></summary>
-<br>
-<ul>
- <li>Click on <b>Code</b> and from the dropdown menu copy your <b>web URL</b> of your forked repository.</li>
- <li>Now open terminal on your local machine.</li>
- <li>Run this command to clone the repo:</li>
-<pre><code>git clone https://github.com/your-username/HTF25-Team-116.git</code></pre>
-</ul>
-</details>
+## Proposed Solution
 
-<details open>
-<summary><h3>4. Adding files to the Repository</h3></summary>
-<br>
-<ul>
- <li>While doing it for the first time, create a new branch for your changes:</li>
-<pre><code>git checkout -b branch-name</code></pre>
- <li>Add your files or make modifications to existing files.</li>
- <li>Stage your changes:</li>
-<pre><code>git add .</code></pre>
- <li>Commit your changes:</li>
-<pre><code>git commit -m "Descriptive commit message"</code></pre>
- <li>Push your branch to your fork:</li>
-<pre><code>git push origin branch-name</code></pre>
-</ul>
-</details>
+**Examzy** is a user-friendly and secure portal for faculty and administrators. After signing in, users are brought to a central dashboard that provides direct access to the three most critical exam management tasks. From this single screen, faculty can instantly **generate a new seating plan**, **download student hall tickets** for a specific exam, or quickly **check their own invigilation assignments**. This design streamlines the entire process, organizing all essential tools into one simple and efficient command center.
 
-<details open>
-<summary><h3>5. Create a Pull Request</h3></summary>
-<br>
-<ul>
- <li>Click on the <b>Contribute</b> button in your fork and choose <b>Open Pull Request</b>.</li>
- <li>Leave all fields as default, then click <b>Create Pull Request</b>.</li>
- <li>Wait a few moments; your PR is now submitted.</li>
-</ul>
-</details>
+## 🚀 Features
 
-## Thanks for participating!
+### Backend (API)
+* **Smart Seat Allocation:** Randomizes student lists and separates them by roll number prefixes to minimize malpractice.
+* **PDF Room Charts:** Dynamically generates PDF files for each exam room, showing the seat-by-seat student allotment.
+* **QR-Coded Hall Tickets:** Generates individual PDF hall tickets for each student, complete with a unique QR code for verification.
+* **Bulk Download:** Creates a single `.zip` file containing all generated hall tickets for easy distribution.
+* **Secure:** Includes a basic, extendable authentication system for faculty-only access.
+
+### Frontend (UI Prototype)
+* **Secure Faculty Login:** A dedicated login page with client-side validation.
+* **Centralized Dashboard:** A main hub providing access to all core functions in a clean, card-based layout.
+* **Seating Plan Generator:** A simple page for an administrator to upload a single consolidated data file.
+* **Hall Ticket Downloader:** A tool on the dashboard to simulate downloading hall tickets, filterable by exam and branch.
+* **Invigilation Check:** A utility for faculty to quickly check their assigned invigilation room.
+
+---
+
+## 🧩 Tech Stack
+
+| Component | Technology / Library | Purpose |
+| :--- | :--- | :--- |
+| **Frontend** | HTML5 | Provides the structure for the login, dashboard, and generator pages. |
+| **Frontend** | CSS3 | Used for all styling, layout (Flexbox/Grid), animations, and the colorful UI. |
+| **Frontend** | JavaScript | Powers client-side interactivity, form validation, and dynamic messages. |
+| **Frontend Service**| Google Fonts | Imports the 'Poppins' font to ensure a modern and consistent typography. |
+| **Backend Framework** | Flask | Creates the web server, API routes (`/login`, `/upload`), and handles requests. |
+| **Data Handling** | Pandas | Reads, processes, and manipulates the uploaded CSV/Excel data. |
+| **PDF Generation** | FPDF (pyfpdf) | Dynamically generates PDF documents for hall tickets and room charts. |
+| **File Handling** | ZipFile | Packages all generated hall tickets into a single downloadable ZIP archive. |
+| **Core Language** | Python | The primary language used for all backend logic and data processing. |
+
+---
+
+## 📁 File Structure
+
+├── backend/
+│   ├── main.py         # Flask server, API routes
+│   └── util.py         # Core logic for PDF/QR/ZIP generation
+│
+├── frontend/
+│   ├── login.html      # The main login/authentication page
+│   └── generator.html  # The page to upload data and recive output
+│
+└── README.md           # This file
+
+---
+
+## ⚙️ How to Run
+
+This project has two parts (backend and frontend) that are run separately.
+
+
+### 2. Frontend (UI Prototype)
+
+1.  **Navigate to the frontend folder:**
+    ```bash
+    cd frontend
+    ```
+2.  **Open the files in your browser:**
+    * Open `login.html` to see the login page.
+    * Open `generator.html` to see the file upload and output page
