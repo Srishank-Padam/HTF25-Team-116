@@ -1,5 +1,3 @@
-# HTF25-Team-116
-
 # 🧠 Examzy - Automated Exam Seating Planner
 
 **Examzy** is a full-stack application designed to automate the complex and time-consuming task of exam seating arrangement. It provides a backend API for processing data and generating all necessary documents, along with a visual frontend prototype for an intuitive faculty-facing user interface.
